@@ -4,10 +4,10 @@ import "./Filler.css";
 import { HamburgerMenu } from "./HamburgerMenu";
 import { ColorfulGrid } from "./ColorfulGrid";
 import { FakeSidebarContent } from "./FakeSidebarContent";
+import { CapybaraArticle } from "./CapybaraArticle";
+import { Route, Switch, useLocation } from "wouter";
 
 type SnappedComponent = "none" | "sidebar" | "main";
-
-type DetailView = null | number;
 
 let sidebarWidth = 300;
 
@@ -16,14 +16,15 @@ function App() {
   let mainContentRef = useRef<HTMLDivElement>(null);
   let sidebarRef = useRef<HTMLDivElement>(null);
 
-  let [detailView, setDetailView] = useState<DetailView>(null);
-
+  let [scrolledToMain, setScrolledToMain] = useState<boolean>(false);
   let [snappedComponent, setSnappedComponent] = useState<SnappedComponent>("main");
+  let [location, _navigate] = useLocation();
 
   // when we first load the page, we want the container scrolled to the main content
   useEffect(() => {
     if (mainContentRef.current) {
       mainContentRef.current.scrollIntoView({ behavior: "instant" });
+      setScrolledToMain(true);
     }
   }, []);
 
@@ -71,9 +72,6 @@ function App() {
       scrollToMain();
     }
   }
-  function onGridItemClick(value: number) {
-    setDetailView(value);
-  }
 
   let mainSnapped = snappedComponent === "main";
   let sidebarSnapped = snappedComponent === "sidebar";
@@ -85,29 +83,35 @@ function App() {
         onScroll={onScroll}
         onClick={onContainerClick}
         ref={containerRef}
-        inert={detailView !== null}
+        inert={location !== "/"}
       >
         <div className={`section sidebar ${sidebarSnapped ? "snapped" : ""}`} ref={sidebarRef}>
-          <Sidebar />
+          {scrolledToMain ? <Sidebar /> : null}
         </div>
 
         <div className={`section main ${mainSnapped ? "snapped" : ""}`} ref={mainContentRef} inert={!mainSnapped}>
           <MainContent>
-            <div className="grid-container">
-              <div className="grid-header">
-                <HamburgerMenu onClick={scrollToSidebar} onTouchEnd={scrollToSidebar} />
+            {scrolledToMain ? (
+              <div className="grid-container">
+                <div className="grid-header">
+                  <HamburgerMenu onClick={scrollToSidebar} onTouchEnd={scrollToSidebar} />
+                </div>
+                <ColorfulGrid />
               </div>
-              <ColorfulGrid onItemClick={onGridItemClick} />
-            </div>
+            ) : null}
           </MainContent>
         </div>
       </div>
 
-      <StackedContent detailView={detailView} setDetailView={setDetailView}>
-        <div className="stacked-header">
-          <h1>Detail View {detailView}</h1>
-        </div>
-      </StackedContent>
+      <Switch>
+        <Route path="/detail/:id">
+          {(params) => (
+            <StackedContent>
+              {(props) => <CapybaraArticle popStackedContent={props.popStackedContent} id={params.id.toString()} />}
+            </StackedContent>
+          )}
+        </Route>
+      </Switch>
     </div>
   );
 }
@@ -129,40 +133,91 @@ const MainContent = function (props: MainContentProps) {
 MainContent.displayName = "MainContent";
 
 type StackedContentProps = {
-  detailView: DetailView;
-  setDetailView: (detailView: DetailView) => void;
-  children: React.ReactNode;
+  children: (props: { popStackedContent: () => void }) => React.ReactNode;
 };
 
-function StackedContent({ detailView, setDetailView, children }: StackedContentProps) {
+function StackedContent({ children }: StackedContentProps) {
+  let stackedViewContainerRef = useRef<HTMLDivElement>(null);
+  let stackedContentBeforeRef = useRef<HTMLDivElement>(null);
   let stackedContentRef = useRef<HTMLDivElement>(null);
+  let stackedContentAnimationRef = useRef<HTMLDivElement>(null);
+  let [_location, navigate] = useLocation();
+
+  function scrollToStackedContent() {
+    if (stackedContentRef.current) {
+      stackedContentRef.current?.scrollIntoView({ behavior: "instant" });
+    }
+  }
 
   // when we first load the page, we want the container scrolled to the main content
   useEffect(() => {
-    if (stackedContentRef.current) {
-      stackedContentRef.current.scrollIntoView({ behavior: "instant" });
-    }
-  }, [detailView]);
+    scrollToStackedContent();
+  }, [stackedContentRef]);
 
-  function onScroll(e: React.UIEvent<HTMLDivElement>) {
-    let scrollLeft = (e.target as HTMLDivElement).scrollLeft;
-    if (scrollLeft < 30) {
-      e.preventDefault();
-      setTimeout(() => {
-        setDetailView(null);
-      }, 50);
+  // Since this view relies on having a correct scroll position, resizing the window
+  // will cause issues since the scroll position will be incorrect. We can work around
+  // this by listening for resize events and then scrolling to the correct position.
+  useEffect(() => {
+    window.addEventListener("resize", scrollToStackedContent);
+    return () => {
+      window.removeEventListener("resize", scrollToStackedContent);
+    };
+  }, []);
+
+  // We only want to animate if we are coming from the main content
+  // otherwise we want an immediate transition. However this option
+  // will stay in the browser history, so we read it in, and then
+  // quietly replace it after the animation is done.
+  //
+  // This is a bit of a hack. In a real app you could use TanStack
+  // Router's masked routes. In the future the navigation API will
+  // likely be a cleaner way to handle this, but this is experimental
+  // in Chrome only for now.
+  let animate = history.state?.animate ?? false;
+
+  function onAnimationEnd() {
+    if (animate) {
+      animate = false;
+      history.replaceState({ animate: false }, "");
+    }
+    if (stackedContentAnimationRef.current?.classList.contains("animate-out")) {
+      navigate("/");
     }
   }
 
-  if (detailView === null) {
-    return null;
+  // The horizontal scroll is going to either snap to stacked-content, or
+  // stacked-content-before. If onscrollsnapchange was supported cross-browser,
+  // we could use that. Since it's not, we can work around it by debouncing a
+  // timeout on scroll and then checking the scroll position.
+  let timeout = 0;
+
+  function onScroll(e: React.UIEvent<HTMLDivElement>) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => onScrollEnd(e), 30);
+  }
+
+  function onScrollEnd(e: React.UIEvent<HTMLDivElement>) {
+    let scrollLeft = (e.target as HTMLDivElement).scrollLeft;
+    if (scrollLeft < 100) {
+      navigate("/");
+    }
+  }
+
+  function popStackedContent() {
+    stackedContentAnimationRef.current?.classList.add("animate-out");
   }
 
   return (
-    <div className="stacked-view-container" onScroll={onScroll}>
-      <div className="stacked-content-before"></div>
+    <div className="stacked-view-container" onScroll={onScroll} ref={stackedViewContainerRef}>
+      <div className="stacked-content-before" ref={stackedContentBeforeRef}></div>
       <div className="stacked-content" ref={stackedContentRef}>
-        <div className="stacked-header">{children}</div>
+        <div
+          className={`stacked-content-animation ${animate ? "animate" : ""}`}
+          onAnimationEnd={onAnimationEnd}
+          ref={stackedContentAnimationRef}
+        >
+          {children({ popStackedContent })}
+        </div>
       </div>
     </div>
   );

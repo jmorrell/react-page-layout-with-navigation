@@ -1,0 +1,129 @@
+.capybara-article {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  color: white;
+  font-family: "Inter", sans-serif;
+  height: calc(100dvh - 60px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.capybara-article h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+  color: #fff;
+  text-align: center;
+}
+
+.article-meta {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 40px;
+  color: #a0a0a0;
+  font-size: 0.9rem;
+}
+
+.article-content {
+  line-height: 1.6;
+}
+
+.article-content p {
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.article-content h2 {
+  font-size: 1.8rem;
+  margin: 2rem 0 1rem;
+  color: #fff;
+}
+
+.article-content ul,
+.article-content ol {
+  margin: 1.5rem 0;
+  padding-left: 2rem;
+}
+
+.article-content li {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.article-content strong {
+  color: #fff;
+}
+
+blockquote {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  border-left: 4px solid #667eea;
+  background: rgba(102, 126, 234, 0.1);
+  font-style: italic;
+}
+
+blockquote p {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.article-footer {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.disclaimer {
+  font-size: 0.9rem;
+  color: #a0a0a0;
+  font-style: italic;
+}
+
+.article-header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: rgba(42, 42, 42, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  z-index: 100;
+}
+
+.back-button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.back-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.05);
+}
+
+.back-button:active {
+  transform: scale(0.95);
+}
+
+.back-button:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
