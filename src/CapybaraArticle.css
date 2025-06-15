@@ -1,13 +1,16 @@
+.capybara-article-container {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  height: calc(100dvh - 60px);
+}
+
 .capybara-article {
-  max-width: 800px;
   margin: 0 auto;
   padding: 20px;
   color: white;
   font-family: "Inter", sans-serif;
-  height: calc(100dvh - 60px);
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  max-width: 800px;
 }
 
 .capybara-article h1 {

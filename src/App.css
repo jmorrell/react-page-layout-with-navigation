@@ -102,6 +102,7 @@ body {
   overscroll-behavior-x: none;
   overscroll-behavior-y: none;
   scroll-snap-type: x mandatory;
+  scrollbar-width: none;
   scroll-timeline-axis: x;
 }
 
@@ -136,7 +137,7 @@ body {
 }
 
 .stacked-content-animation.animate {
-  animation-duration: 0.3s;
+  animation-duration: 0.5s;
   animation-name: animate-stacked-content-in;
   animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
 }
@@ -151,7 +152,7 @@ body {
 }
 
 .stacked-content-animation.animate-out {
-  animation-duration: 0.3s;
+  animation-duration: 0.5s;
   animation-name: animate-stacked-content-out;
   animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
 }
