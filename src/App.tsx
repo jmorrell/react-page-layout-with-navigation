@@ -1,11 +1,13 @@
 import { useRef, useEffect, useState } from "react";
-import "./App.css";
-import "./Filler.css";
+import { Route, Switch, useLocation } from "wouter";
+
 import { HamburgerMenu } from "./HamburgerMenu";
 import { ColorfulGrid } from "./ColorfulGrid";
 import { FakeSidebarContent } from "./FakeSidebarContent";
 import { CapybaraArticle } from "./CapybaraArticle";
-import { Route, Switch, useLocation } from "wouter";
+
+import "./App.css";
+import "./Filler.css";
 
 type SnappedComponent = "none" | "sidebar" | "main";
 
