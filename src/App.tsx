@@ -146,10 +146,11 @@ function StackedContent({ detailView, setDetailView, children }: StackedContentP
 
   function onScroll(e: React.UIEvent<HTMLDivElement>) {
     let scrollLeft = (e.target as HTMLDivElement).scrollLeft;
-    console.log("scrollLeft", scrollLeft);
     if (scrollLeft < 30) {
       e.preventDefault();
-      setDetailView(null);
+      setTimeout(() => {
+        setDetailView(null);
+      }, 50);
     }
   }
 
