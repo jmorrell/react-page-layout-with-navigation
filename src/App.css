@@ -1,45 +1,133 @@
-#root {
-	max-width: 1280px;
-	margin: 0 auto;
-	padding: 2rem;
-	text-align: center;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.logo {
-	height: 6em;
-	padding: 1.5em;
-	will-change: filter;
-	transition: filter 300ms;
-}
-.logo:hover {
-	filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-	filter: drop-shadow(0 0 2em #61dafbaa);
-}
-.logo.cloudflare:hover {
-	filter: drop-shadow(0 0 2em #f6821faa);
+body {
+  font-family: "Inter", sans-serif;
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: none;
+  background: #2a2a2a;
+  overflow: hidden;
 }
 
-@keyframes logo-spin {
-	from {
-		transform: rotate(0deg);
-	}
-	to {
-		transform: rotate(360deg);
-	}
+.container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100dvh;
+  width: 100vw;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  display: flex;
+  scrollbar-width: none;
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: none;
+  scroll-snap-type: x mandatory;
+  scroll-timeline-name: --container-scroll;
+  scroll-timeline-axis: x;
+  --sidebar-width: 300px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-	a:nth-of-type(2) .logo {
-		animation: logo-spin infinite 20s linear;
-	}
+.section {
+  min-width: 100vw;
+  height: 100dvh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
 }
 
-.card {
-	padding: 2em;
+.main {
+  position: sticky;
+  left: 0;
+  z-index: 0;
+  background: #2a2a2a;
+  overflow: hidden;
 }
 
-.read-the-docs {
-	color: #888;
+.stacked {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: #2a2a2a;
+}
+
+.sidebar {
+  z-index: 1;
+  min-width: var(--sidebar-width);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 0;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+@keyframes sidebar-effect {
+  from {
+    transform: translateX(calc(var(--parallax-multiplier, 1) * -50px));
+    filter: brightness(40%);
+  }
+}
+
+.main-content {
+  animation: sidebar-effect linear;
+  animation-timeline: --container-scroll;
+  /* The Safari polyfill doesn't work well with the sidebar width variable,
+   * so we're hardcoding the value for now */
+  animation-range: 0px 300px;
+  width: 100%;
+  height: 100%;
+  background: #2a2a2a;
+}
+
+.stack-base {
+  position: relative;
+}
+
+.stacked-view-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  display: flex;
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: none;
+  scroll-snap-type: x mandatory;
+  scroll-timeline-axis: x;
+}
+
+.stacked-content {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  min-width: 100vw;
+  width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #2a2a2a;
+  pointer-events: auto;
+}
+
+.stacked-content-before {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  min-width: 100vw;
+  width: 100vw;
+  height: 1px;
+  max-height: 100dvh;
+  background: #2a2a2a;
+  opacity: 0.2;
+  pointer-events: none;
 }
